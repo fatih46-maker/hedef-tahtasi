@@ -1,0 +1,16 @@
+HEDEF TAHTASI — ONLINE SÜRÜM
+
+Bu paket Render üzerinde yayınlanmak üzere hazırlanmıştır.
+
+Dosyalar:
+- index.html: uygulamanın ekranı
+- server.js: internet üzerindeki kayıt ve giriş sunucusu
+- data.json: kullanıcı ve hedef kayıtları
+- package.json: çalıştırma ayarı
+
+Render ayarları:
+- Environment: Node
+- Build Command: npm install
+- Start Command: npm start
+
+Uygulama açıldığında e-posta ve şifre ile hesap oluşturulur. Hedefler sunucuya kaydedilir. Tahtaya alınan hedef sunucuda da kilitlenir.

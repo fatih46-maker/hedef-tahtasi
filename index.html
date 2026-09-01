@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hedef Tahtası — Kişisel Karar Sistemi v2</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#667085;--line:#d9e0ea;--accent:#17365d;--accent2:#294f7d;--good:#16803c;--warn:#a66a00;--bad:#b42318;--dark:#101827}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px Segoe UI,Arial,sans-serif}.app{display:flex;min-height:100vh}
+.side{width:245px;background:var(--dark);color:#fff;padding:22px 15px;position:sticky;top:0;height:100vh}.brand{font-size:20px;font-weight:800;margin:0 8px 24px}.brand small{display:block;color:#98a2b3;font-size:11px;margin-top:5px}.nav button{display:block;width:100%;padding:12px;margin:4px 0;text-align:left;background:transparent;color:#cbd5e1;border:0;border-radius:9px}.nav button:hover,.nav button.active{background:#263449;color:#fff}.nav .section{color:#667085;font-size:11px;text-transform:uppercase;margin:18px 8px 5px}
+main{max-width:1250px;width:100%;padding:30px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}h1{margin:0 0 5px;font-size:29px}h2{margin-top:0}h3{margin-bottom:8px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;margin:15px 0;box-shadow:0 3px 12px #10182808}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.stat b{display:block;font-size:27px;margin:3px 0}.stat span{color:var(--muted);font-size:13px}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 16px;font-weight:700}.primary{background:var(--accent);color:#fff}.primary:hover{background:var(--accent2)}.secondary{background:#e8eef6;color:var(--accent)}.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}.danger{background:#fee4e2;color:var(--bad)}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:var(--ink)}textarea{min-height:90px;resize:vertical}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.hidden{display:none}.auth-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.auth-box{max-width:430px;width:100%;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 12px 40px #10182818}.auth-box h1{font-size:25px}.auth-box .row>*{flex:1}
+.notice{border-left:4px solid var(--accent);background:#f8fafc;padding:15px;line-height:1.55}.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress div{height:100%;background:var(--accent);transition:.2s}.question{font-size:22px;font-weight:800;margin:8px 0 12px}.explain{color:var(--muted);line-height:1.55}.options{display:grid;gap:10px}.option{text-align:left;background:#fff;border:1px solid var(--line);padding:15px}.option:hover{border-color:#7890ad}.option.selected{border:2px solid var(--accent);background:#eef4fb}.option .score{float:right;color:var(--muted);font-size:12px}
+.badge{padding:5px 9px;border-radius:99px;font-weight:800;font-size:12px}.good{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}.darkbadge{background:#e5e7eb;color:#374151}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}th{font-size:11px;color:var(--muted);text-transform:uppercase}.scroll{overflow:auto}.scorebar{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.scorebar div{height:100%;background:var(--accent)}
+.kpi{font-size:13px;color:var(--muted)}.mini{font-size:12px}.setting-row{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #edf0f4}.question-edit{display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:12px}.option-edit{display:grid;grid-template-columns:70px 1fr 90px;gap:8px;margin:7px 0}
+.toast{position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:13px 16px;border-radius:10px;display:none;z-index:20}
+.modal{position:fixed;inset:0;background:#10182888;display:none;align-items:center;justify-content:center;padding:20px;z-index:30}.modal.show{display:flex}.modal-box{background:#fff;max-width:760px;width:100%;max-height:85vh;overflow:auto;border-radius:16px;padding:24px;box-shadow:0 20px 60px #10182833}.modal-box h2{margin-top:0}.close{float:right;background:#eef2f6;color:#172033}.detail-link{background:none;border:0;color:#17365d;padding:0;font-weight:700;text-decoration:underline} .decision-group{display:inline-flex;align-items:center;gap:5px;flex-wrap:wrap;padding:5px 7px;border:1px solid #dbe2ea;border-radius:9px;background:#f8fafc;font-size:11px}.decision-group b{font-size:10px}.decision-group .tag{padding:3px 6px;border-radius:6px;background:#fff;border:1px solid #e2e8f0;font-weight:700}.filter-wrap{margin:12px 0 16px}.live-filter{width:100%;max-width:540px;padding:11px 14px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px;box-sizing:border-box}.live-filter:focus{border-color:#475467;outline:none;box-shadow:0 0 0 3px #eef2f6}.filter-hint{font-size:12px;color:#667085;margin-top:5px}.hidden-row{display:none!important}.matrix{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.matrix-card{border:1px solid #dbe2ea;border-radius:12px;padding:16px;background:#fff}.action-pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2f6;font-weight:700;font-size:12px}
+.urgency-hero{margin-top:16px;padding:18px;border:1px solid #dbe2ea;border-radius:16px;background:#f8fafc}.score-big{font-size:32px;font-weight:900;line-height:1}.score-label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#667085;font-weight:800}.meter{height:12px;background:#e9eef3;border-radius:999px;overflow:hidden;margin:10px 0 8px}.meter-fill{height:100%;border-radius:999px}.matrix-visual{display:grid;grid-template-columns:110px 1fr 1fr;grid-template-rows:42px 150px 150px;margin-top:16px;border:1px solid #dbe2ea;border-radius:14px;overflow:hidden}.matrix-visual>div{border-right:1px solid #dbe2ea;border-bottom:1px solid #dbe2ea;padding:12px}.matrix-head{background:#f2f4f7;font-weight:800;text-align:center}.matrix-axis{background:#f8fafc;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center}.matrix-cell{position:relative}.matrix-cell strong{display:block;margin-bottom:5px}.matrix-selected{outline:3px solid #111827;outline-offset:-3px;box-shadow:inset 0 0 0 999px #ffffff55}.matrix-dot{position:absolute;right:12px;top:12px;width:16px;height:16px;border-radius:50%;background:#111827}.matrix-cell small{color:#667085}.urgency-level{font-weight:800}.matrix-caption{margin-top:8px;font-size:13px;color:#667085}
+@media(max-width:700px){.matrix-visual{grid-template-columns:70px 1fr 1fr;grid-template-rows:42px 165px 165px}.matrix-visual>div{padding:8px}.score-big{font-size:28px}}
+
+@media(max-width:850px){.app{display:block}.side{width:auto;height:auto;position:sticky;z-index:10}.nav{display:flex;overflow:auto}.nav .section{display:none}.nav button{white-space:nowrap;width:auto}.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}main{padding:16px}.question-edit{grid-template-columns:1fr}.option-edit{grid-template-columns:50px 1fr 80px}}
+</style>
+<!-- ONLINE_READY_V1 -->
+<script>
+window.ONLINE_CONFIG = {
+  enabled: true,
+  apiBaseUrl: "",
+  version: "1.0"
+};
+</script>
+</head>
+<body>
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <h1>Hedef Tahtası</h1>
+    <p class="muted">Hedeflerini internet üzerinde saklamak için giriş yap.</p>
+    <label><b>E-posta</b></label><input id="authEmail" type="email" placeholder="ornek@mail.com" autocomplete="email">
+    <div style="height:10px"></div>
+    <label><b>Şifre</b></label><input id="authPassword" type="password" placeholder="En az 8 karakter" autocomplete="current-password">
+    <div style="height:14px"></div>
+    <div class="row"><button class="primary" onclick="loginOnline()">Giriş Yap</button><button class="secondary" onclick="registerOnline()">Yeni Hesap Oluştur</button></div>
+    <p id="authMsg" class="muted" style="margin-bottom:0"></p>
+  </div>
+</div>
+<div class="app">
+<aside class="side">
+<div class="brand">HEDEF TAHTASI<small>Kişisel hedef seçim ve taahhüt sistemi · v2</small></div>
+<div class="nav">
+<button data-page="home">Ana Sayfa</button>
+<button data-page="new">＋ Yeni Hedef</button>
+<div class="section">Hedefler</div>
+<button data-page="pool">Hedef Havuzu</button>
+<button data-page="ranking">Öncelik Sıralaması</button>
+<button data-page="board">Hedef Tahtası</button>
+<div class="section">Sistem</div>
+<button data-page="settings">⚙ Ayarlar & Düzenle</button>
+<button class="ghost" style="width:100%;margin:12px 0;background:#fff" onclick="logoutOnline()">Çıkış Yap</button>
+</div>
+</aside>
+<main>
+
+<section id="home" class="page">
+<div class="top"><div><h1>Hedef Tahtası</h1><div class="notice"><b>Eisenhower burada ikinci bir karar katmanıdır:</b> Öncelik sırası “hangisi daha önemli?” sorusunu, Eisenhower ise “bu hedefe şimdi nasıl davranmalıyım?” sorusunu cevaplar. <b>Aciliyet ana sıralama matematiğine eklenmez.</b></div><div class="notice"><b>Aciliyet ve Eisenhower:</b> Aciliyet hedefin zaman baskısını gösterir. Eisenhower bölgesi ise hedefe şu anda nasıl davranılması gerektiğini söyler. Bu bilgi hedefin ana öncelik sırasını tek başına değiştirmez.</div><div class="muted">Hedefleri çoğaltmak için değil, doğru hedefi seçmek için.</div></div><button class="primary" onclick="go('new')">＋ Yeni Hedef</button></div>
+<div class="card notice"><b>Temel kural:</b> Tahtaya almak bir istek değil, bir taahhüttür.<br><b>Tahtaya alınan hedef geri indirilemez.</b></div>
+<div id="stats" class="grid"></div>
+<div class="card"><h2>Hızlı kullanım</h2><ol><li>Hedef adını yaz.</li><li>Testte seçenekleri, sorunun altında verilen açıklamaya göre değerlendir.</li><li>28 soruyu tamamla.</li><li>Sonuç raporunu incele.</li><li>Hedefi havuza kaydet.</li><li>Hazır olan hedefi tahtaya al. <b>Tahta kilitlidir.</b></li></ol></div>
+<div class="card"><h2>Bu sürümde ne değişti?</h2><p class="muted">Sorular, kategoriler, puan eşikleri ve uygulama verileri artık Ayarlar ekranından yönetilebilir. Yeni soru ekleyebilir, mevcut soruyu düzenleyebilir veya çıkarabilir; kategori ekleyebilir; verileri yedekleyip başka bilgisayara taşıyabilirsin.</p></div>
+</section>
+
+<section id="new" class="page hidden">
+<div class="top"><div><h1>Yeni Hedef</h1><div class="muted">Yalnızca hedef adını yaz. Geri kalanını sistem otomatik yapar.</div></div></div>
+<div class="card"><label><b>Hedef adı</b></label><input id="name" placeholder="Örn. Kendi işimi kurmak"><input type="hidden" id="cat" value="Diğer"><div style="height:16px"></div><button class="primary" onclick="start()">Teste Başla →</button></div>
+</section>
+
+<section id="test" class="page hidden">
+<div class="top"><div><h1 id="tg"></h1><div id="editNotice" class="notice hidden"><b>Güncelleme modu:</b> Mevcut cevaplar korunur. İstersen bu soruda değiştir ve <b>Değişiklikleri Kaydet ve Bitir</b> ile hemen sonucu güncelle.</div><div id="count" class="muted"></div></div><button class="ghost" onclick="confirmGoNew()">İptal</button></div>
+<div class="card notice"><b>Objektif cevap kuralı:</b> Olmasını istediğin cevabı değil, bugün kanıtlayabileceğin durumu seç. Emin değilsen daha düşük seçeneği seç. Örneğin “ilk adımım belli” sorusunda yarın yapacağın işi tek cümleyle söyleyemiyorsan yüksek puanı seçme.</div><div class="progress"><div id="bar"></div></div><div class="card"><div id="area" class="muted"></div><div id="q" class="question"></div><div id="ex" class="explain"></div><div id="opts" class="options"></div></div>
+<div class="row between"><button class="secondary" onclick="prev()">← Geri</button><div class="muted mini">Cevaplar otomatik olarak bu hedef için tutulur.</div><div class="row"><button class="primary hidden" onclick="finishEditNow()" id="editFinishBtn">Değişiklikleri Kaydet ve Bitir ✓</button><button class="primary" onclick="next()" id="next">İleri →</button></div></div>
+</section>
+
+<section id="result" class="page hidden">
+<div class="top"><div><h1>Sonuç Raporu</h1><div id="rg" class="muted"></div></div><div class="row"><button class="secondary" id="saveBtn" onclick="saveGoal()">Hedefi Havuza Kaydet</button><button class="primary hidden" id="boardBtn" onclick="addToBoard()">🎯 Tahtaya Al</button></div></div><div id="res"></div>
+</section>
+
+<section id="pool" class="page hidden">
+<div class="top"><div><h1>Hedef Havuzu</h1><div class="muted">Tüm kayıtlar burada tutulur.</div></div><button class="primary" onclick="go('new')">＋ Yeni Hedef</button></div>
+<div class="card scroll"><div class="filter-wrap"><input id="poolFilter" class="live-filter" type="text" autocomplete="off" placeholder="Hedef, kategori, karar, önem, aciliyet veya Eisenhower ara..." oninput="liveFilter('poolFilter','pool')"><div class="filter-hint">Yazdıkça liste anında filtrelenir. Enter veya buton gerekmez.</div></div><table><thead><tr><th>Hedef</th><th>Karar Eşikleri</th><th>Eisenhower</th><th>Hedef Karar</th><th>İşlem ve Butonlar</th></tr></thead><tbody id="poolT"></tbody></table></div>
+</section>
+
+<section id="ranking" class="page hidden">
+<div class="top"><div><h1>Öncelik Sıralaması</h1><div class="muted">Hazır hedefler öne alınır; zorluk tek başına öncelik değildir. Her satırdaki <b>Neden bu sıra?</b> butonu gerekçeyi açıklar. <b>Aciliyet ana sıralama puanına dahil değildir.</b></div><div class="notice"><b>Sıralama puanı:</b> (Öncelik × 1,20) + (Hazırlık × 0,70) + (Taahhüt × 0,40) − (Risk × 0,25). Ayrıntılı hesap için satırdaki <b>Neden bu sıra?</b> butonuna basın.</div></div></div>
+<div class="card scroll"><div class="filter-wrap"><input id="rankFilter" class="live-filter" type="text" autocomplete="off" placeholder="Hedef, karar, önem, aciliyet veya Eisenhower ara..." oninput="liveFilter('rankFilter','ranking')"><div class="filter-hint">Yazdıkça liste anında filtrelenir. Enter veya buton gerekmez.</div></div><table><thead><tr><th>Hedef</th><th>Karar Eşikleri</th><th>Eisenhower</th><th>Hedef Karar</th><th>Güncelle</th><th>Neden bu sıra?</th></tr></thead><tbody id="rankT"></tbody></table></div>
+</section>
+
+<section id="board" class="page hidden">
+<div class="top"><div><h1>Hedef Tahtası</h1><div class="muted">Tahtaya alınan hedefler kilitlidir.</div></div></div>
+<div class="card notice"><b>GERİ İNDİRİLEMEZ.</b> Bir hedefi tahtaya almak bilinçli taahhüttür. Uygulama üzerinden tahtadan çıkarma işlemi yoktur.</div>
+<div class="filter-wrap"><input id="boardFilter" class="live-filter" type="text" autocomplete="off" placeholder="Tahtadaki hedeflerde ara..." oninput="liveBoardFilter()"><div class="filter-hint">Yazdıkça liste anında filtrelenir. Enter veya buton gerekmez.</div></div><div id="boardT"></div>
+</section>
+
+<section id="settings" class="page hidden">
+<div class="top"><div><h1>Ayarlar & Düzenle</h1><div class="muted">Sistemin içeriğini ve eşiklerini buradan değiştirebilirsin.</div></div></div>
+<div class="card"><h2>Karar eşikleri</h2>
+<p class="muted"><b>Eşik</b>, bir skorun tahtaya giriş için ulaşması gereken alt sınırdır. Örneğin Hazırlık 75 ise hazırlık skorunun en az 75 olması gerekir.</p>
+<div class="notice"><b>Temel amaç:</b> Eşikler hedef sayısını artırmak için değil, erken ve yanlış taahhüt vermeyi önlemek için kullanılır.</div>
+<div id="thresholds"></div><button class="primary" onclick="saveSettings()">Ayarları Kaydet</button>
+<h3>Eşiklerin kısa anlamı</h3>
+<ul><li><b>Öncelik:</b> Hedefin önemli, etkili ve zaman açısından gerekli olma düzeyi.</li>
+<li><b>Hazırlık:</b> Hedefin netliği, planı, ilk adımı ve mevcut kapasitenin yeterliliği.</li>
+<li><b>Taahhüt:</b> Gereken zaman, fedakârlık ve devamlılığı gerçekten üstlenme düzeyi.</li>
+<li><b>Netlik:</b> Hedefin ve beklenen sonucun açık olması.</li>
+<li><b>İlk adım:</b> Yarın yapılacak işin somut biçimde belli olması.</li>
+<li><b>Başarı ölçütü:</b> Hedef gerçekleştiğinde bunu kanıtlayacak ölçütün belli olması.</li></ul>
+<p class="muted"><b>Prensip:</b> “Çok istiyorum” tek başına yeterli değildir. Tahta; <b>önemli + hazır + taahhüt edilebilir + net</b> hedefler içindir.</p>
+</div>
+<div class="card"><h2>Kategoriler</h2><div class="row"><input id="newCat" placeholder="Yeni kategori adı"><button class="secondary" onclick="addCategory()">Kategori Ekle</button></div><div id="cats" style="margin-top:14px"></div></div>
+<div class="card"><div class="top"><div><h2>Soru Bankası</h2><div class="muted">Soru ekle, düzenle veya çıkar. Her soru 4 seçenekli ve 1–4 puanlıdır.</div></div><button class="primary" onclick="addQuestion()">＋ Soru Ekle</button></div><div id="questionsEdit"></div></div>
+<div class="card"><h2>Veri yedekleme</h2><p class="muted">Hedeflerini ve ayarlarını tek dosya halinde yedekleyip başka bilgisayarda geri yükleyebilirsin.</p><div class="row"><button class="secondary" onclick="exportData()">Yedek Al (.json)</button><label class="secondary" style="cursor:pointer">Yedekten Geri Yükle <input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"></label><button class="danger" onclick="resetAll()">Tüm Verileri Sıfırla</button></div></div>
+</section>
+</main></div>
+<div id="toast" class="toast"></div>
+
+<div id="rankModal" class="modal" onclick="if(event.target===this)closeRankReason()">
+<div class="modal-box"><button class="close" onclick="closeRankReason()">Kapat ✕</button>
+<h2 id="rankTitle">Önceliklendirme Gerekçesi</h2><div id="rankSummary" class="notice"></div>
+<h3>Öncelik sırası neden böyle?</h3><p id="rankReason"></p>
+<button class="detail-link" onclick="toggleRankDetail()">▸ Önceliklendirme prensibini detaylı açıkla</button>
+<div id="rankDetail" class="hidden" style="margin-top:12px"></div></div></div>
+<script>
+const DEFAULT_Q=[["Netlik","Hedefin sonucunu bugün nasıl tarif edebilirsin?","İstediğin şeyi değil, ortaya çıkacak sonucu tarif et. Örnek: “İngilizcemi geliştirmek” değil, “31 Aralık'a kadar B2 sınavını geçmek”.","Sadece genel bir istek","Sonuç var ama sınırı belirsiz","Sonuç büyük ölçüde tanımlı","Sonuç sayı, tarih veya açık bir çıktı ile doğrulanabilir",[1,2,3,4]],["Netlik","Hedefe ulaştığını hangi kanıt gösterecek?","Bir başkasına gösterdiğinde onun da anlayabileceği bir kanıt düşün: sayı, belge, ürün, tarih veya gözlenebilir sonuç.","Hiçbir kanıt söyleyemiyorum","Bir kanıt var ama belirsiz","Kanıt büyük ölçüde belli","Tek ve net bir doğrulama ölçütüm var",[1,2,3,4]],["Netlik","Hedefin sınırları belli mi?","Neyin bu hedefe dahil, neyin dahil olmadığını düşün. Örnek: “İş kurmak” yerine “tek ürünlü e-ticaret sitesi açmak”.","Neyi kapsadığı belirsiz","Kabaca biliyorum","Büyük ölçüde belli","Kapsamı ve kapsam dışı olanlar belli",[1,2,3,4]],["Motivasyon","Bu hedefi kim istiyor?","Kararı kimin verdiğine bak. Başkasını memnun etmek ile kendi seçimin aynı şey değildir.","Esas olarak başkaları istiyor","Başkalarının etkisi güçlü","Hem benim hem başkalarının etkisi var","Bu hedefi ben seçiyorum ve nedenini açıklayabiliyorum",[1,2,3,4]],["Motivasyon","Hedef gerçekleşmezse senin için ne değişir?","Gerçek sonucu düşün. Sadece “üzülürüm” değil; para, zaman, yaşam biçimi veya önemli bir fırsat gibi somut etkileri düşün.","Neredeyse hiçbir şey","Küçük bir fark","Belirgin bir fark","Benim için önemli ve somut bir sonuç var",[1,2,3,4]],["Etki","Hedef gerçekleşirse hayatında ne kadar somut fark oluşur?","Bugünkü durum ile hedef gerçekleşmiş durum arasındaki farkı düşün.","Çok az fark","Sınırlı fark","Belirgin fark","Büyük ve ölçülebilir fark",[1,2,3,4]],["Etki","Bu hedef daha büyük bir hedefini destekliyor mu?","Örneğin “İngilizce öğrenmek”, yurt dışında çalışmak hedefini doğrudan kolaylaştırabilir.","Hayır","Bağlantı zayıf","Belirgin bağlantı var","Daha büyük bir hedef için temel adım",[1,2,3,4]],["Zamanlama","Şimdi başlamanı gerektiren gerçek neden nedir?","Takvim, son tarih, fırsat veya kayıp gibi bugün var olan bir nedeni ara.","Gerçek bir neden yok","Genel bir neden var","Belirli bir neden var","Gecikmenin açık ve ciddi bir bedeli var",[1,2,3,4]],["Zamanlama","Bu hedefi 6 ay ertelersen ne olur?","Gerçek sonucu düşün; tahmin edemiyorsan “bilmiyorum”a en yakın seçeneği seç.","Hiçbir şey değişmez","Küçük bir kayıp olur","Belirgin bir fırsat veya zaman kaybı olur","Ciddi ve geri alınması zor bir kayıp olur",[1,2,3,4]],["Öncelik","Bugün sahip olduğun diğer hedeflere göre bu hedef nerede?","Tüm hedeflerini aynı anda düşün. Birinci olmak zorunda değil; gerçek sırasını seç.","Alt sıralarda","Orta sıralarda","Üst sıralarda","En üst önceliklerimden biri",[1,2,3,4]],["Öncelik","Bu hedef başka bir hedefin önündeki engeli kaldırıyor mu?","Bir hedef tamamlanınca başka bir hedef daha kolay başlıyorsa burada kaldıraç vardır.","Hayır","Emin değilim","Kısmen","Evet, önemli bir engeli kaldırıyor",[1,2,3,4]],["Zorluk","Hedef için haftalık gerçek çalışma yükü nedir?","Hayal ettiğin zamanı değil, takviminde gerçekten ayırman gereken süreyi düşün.","Haftada 1 saatten az","1–3 saat","3–7 saat","7 saatten fazla",[1,2,3,4]],["Zorluk","Hedefin gerektirdiği enerji ve disiplin ne kadar?","Düzenli tekrar, uzun odaklanma veya zor kararlar gerekiyorsa yük yükselir.","Düşük","Orta","Yüksek","Çok yüksek",[1,2,3,4]],["Zorluk","Hedef için gereken para mevcut kapasitenin ne kadarını kullanır?","Sadece toplam fiyatı değil, bütçene oranını düşün.","Para gerektirmiyor","Bütçeyi çok az etkiler","Bütçede planlama gerektirir","Bütçeyi ciddi biçimde zorlar",[1,2,3,4]],["Zorluk","Hedef için eksik olan bilgi veya beceri ne kadar?","Bugün yapamadığın şeyleri say. Eksikliği öğrenerek kapatabilirsin; burada ölçülen mevcut açığın büyüklüğüdür.","Neredeyse hiç eksik yok","Küçük bir açık var","Orta düzey açık var","Büyük bir beceri/bilgi açığı var",[1,2,3,4]],["Zorluk","Hedef kaç farklı parçanın aynı anda ilerlemesini gerektiriyor?","Örneğin iş kurmak; ürün, satış, para, hukuk ve operasyon gibi birçok parçaya ayrılabilir.","1–2 parça","3–4 parça","5–6 parça","7 veya daha fazla parça",[1,2,3,4]],["Risk","Sonucun ne kadarı senin kontrolünde?","Başkalarının kararı, piyasa, izin, sağlık, hava veya başka dış koşullar sonucu belirliyorsa kontrol azalır.","Neredeyse tamamen benim kontrolümde","Çoğu benim kontrolümde","Dış etkenler önemli","Sonucun büyük bölümü dış koşullara bağlı",[4,3,2,1]],["Risk","Başarısız olursan maddi kaybın ne kadar olur?","En kötü makul sonucu düşün; normal sonucu değil.","Neredeyse hiç","Düşük","Orta","Yüksek",[1,2,3,4]],["Risk","Başarısız olursan ne kadar zaman geri gelmez?","Harcadığın zaman başka bir işe ayrılamıyorsa fırsat maliyeti oluşur.","Çok az","Az","Belirgin","Çok yüksek",[1,2,3,4]],["Risk","Hedefi denemek başka önemli bir fırsatı kaçırmana yol açar mı?","Aynı zaman ve para iki hedefe birden ayrılamıyorsa seçim maliyeti vardır.","Hayır","Çok az","Belirgin","Ciddi bir fırsatı kaçırabilirim",[1,2,3,4]],["Taahhüt","Bu hedef için gereken haftalık zamanı takviminde gerçekten ayırabilir misin?","Boş zaman umma; takviminde yeri gerçekten var mı diye bak.","Hayır","Şimdilik belirsiz","Evet, büyük ölçüde","Evet, takvimimde yeri hazır",[1,2,3,4]],["Taahhüt","Zor bir hafta geldiğinde minimum olarak ne yapacağını belirledin mi?","Örnek: normalde 5 gün çalışıyorsan, kötü haftada en az 2 gün yapmaya devam etmek gibi bir alt sınır.","Hayır","Aklımda ama yazılı değil","Bir alt sınırım var","Alt sınırım net ve uygulanabilir",[1,2,3,4]],["Taahhüt","Hedef için hangi şeyden vazgeçmen gerektiğini biliyor musun?","Yeni hedef zaman ister. Örneğin haftada 5 saat ayırmak için başka bir etkinliği azaltman gerekebilir.","Hiçbir şeyden vazgeçmeyeceğim; kapasiteyi de bilmiyorum","Birkaç şeyi azaltabilirim","Neyi azaltacağım büyük ölçüde belli","Vazgeçeceğim şeyi ve bedelini net kabul ediyorum",[1,2,3,4]],["Taahhüt","Sonuç istediğin gibi olmazsa planını değiştirip devam eder misin?","İlk yöntemin çalışmaması hedefin yanlış olduğu anlamına gelmez. Yöntemi değiştirme isteğini değerlendir.","Hayır, bırakırım","Emin değilim","Büyük ölçüde devam ederim","Yöntemi değiştirip hedefe devam ederim",[1,2,3,4]],["Uygulanabilirlik","İlk adımı tek cümleyle söyleyebilir misin?","“Araştıracağım” gibi genel söz yerine yapılacak işi söyle. Örnek: “3 kursun fiyat ve ders programını karşılaştıracağım.”","Hayır","Genel olarak biliyorum","Büyük ölçüde belli","Yarın yapacağım iş net",[1,2,3,4]],["Uygulanabilirlik","İlk adım için gereken şeyler şu anda elinde mi?","İlk adımı başlatmak için gerekli zaman, bilgi, para veya araçların mevcut olup olmadığını düşün.","Hayır","Bazıları eksik","Çoğu hazır","Başlamak için gerekenler hazır",[1,2,3,4]],["Uygulanabilirlik","Şu anda başlamanı engelleyen gerçek bir engel var mı?","İsteksizlik ile gerçek engeli ayır. Gerçek engel: para yok, izin gerekiyor, gerekli belge yok gibi.","Büyük ve şu an çözülemeyen engel var","Belirgin bir engel var","Engel var ama yönetilebilir","Başlamayı engelleyen gerçek bir engel yok",[4,3,2,1]],["Plan","Hedefi ilk 3–5 uygulanabilir adıma bölebilir misin?","Örneğin: araştır → seçim yap → ilk denemeyi yap → sonucu ölç → düzelt.","Hayır","1–2 adım söyleyebilirim","3–5 adım söyleyebilirim","Adımlar sıralı ve uygulanabilir",[1,2,3,4]],["Kapasite","Bu hedefi mevcut hayat düzenin bozulmadan sürdürebilir misin?","Uyku, iş, aile ve diğer zorunlulukları hesaba kat. Sadece boş görünen zamanı sayma.","Hayır","Zor görünüyor","Büyük ölçüde mümkün","Evet, sürdürülebilir bir yeri var",[1,2,3,4]]];
+const DEFAULT_SETTINGS={priority:70,prep:75,commit:75,clarity:75,firstStep:75,success:75,categories:["Kariyer","Finans","Sağlık","Eğitim","İlişkiler","Kişisel Gelişim","Proje","Diğer"],"urgency":70};
+let settings=JSON.parse(localStorage.getItem("ht_settings")||"null")||structuredCloneSafe(DEFAULT_SETTINGS);
+let questions=JSON.parse(localStorage.getItem("ht_questions")||"null")||structuredCloneSafe(DEFAULT_Q);
+let goals=JSON.parse(localStorage.getItem("ht_goals")||"[]");
+let cur=null;
+let onlineToken=sessionStorage.getItem("ht_online_token")||"";
+
+async function api(path,options={}){
+  const headers=Object.assign({"Content-Type":"application/json"},options.headers||{});
+  if(onlineToken) headers.Authorization="Bearer "+onlineToken;
+  const r=await fetch((window.ONLINE_CONFIG.apiBaseUrl||"")+path,Object.assign({},options,{headers}));
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error||"İşlem başarısız.");
+  return data;
+}
+async function loginOnline(){
+  const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
+  if(!email||!password){document.getElementById("authMsg").textContent="E-posta ve şifre gerekli.";return;}
+  try{const d=await api("/api/login",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
+  catch(e){document.getElementById("authMsg").textContent=e.message;}
+}
+async function registerOnline(){
+  const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
+  if(!email||password.length<8){document.getElementById("authMsg").textContent="Geçerli e-posta ve en az 8 karakter şifre gerekli.";return;}
+  try{const d=await api("/api/register",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
+  catch(e){document.getElementById("authMsg").textContent=e.message;}
+}
+async function loadOnlineGoals(){const d=await api("/api/goals");goals=Array.isArray(d.goals)?d.goals:[];localStorage.setItem("ht_goals",JSON.stringify(goals));}
+async function loadOnlineProfile(){const d=await api("/api/profile");if(d.settings)settings=d.settings;if(Array.isArray(d.questions)&&d.questions.length)questions=d.questions;persist();}
+async function syncProfile(){try{await api("/api/profile",{method:"PUT",body:JSON.stringify({settings,questions})});}catch(e){console.warn(e);}}
+async function deleteOnlineGoal(id){try{await api("/api/goals/"+encodeURIComponent(id),{method:"DELETE"});return true;}catch(e){alert("Online silme yapılamadı: "+e.message);return false;}}
+
+async function syncGoal(g){try{const d=await api("/api/goals",{method:"POST",body:JSON.stringify(g)});const saved=d.goal||g;const i=goals.findIndex(x=>x.id===saved.id);if(i>=0)goals[i]=saved;localStorage.setItem("ht_goals",JSON.stringify(goals));return true;}catch(e){alert("Online kayıt yapılamadı: "+e.message);return false;}}
+async function syncBoard(id){try{const d=await api("/api/goals/"+encodeURIComponent(id)+"/board",{method:"POST"});const g=d.goal;if(g){const i=goals.findIndex(x=>x.id===g.id);if(i>=0)goals[i]=g;localStorage.setItem("ht_goals",JSON.stringify(goals));}return true;}catch(e){alert("Tahta kaydı yapılamadı: "+e.message);return false;}}
+function logoutOnline(){sessionStorage.removeItem("ht_online_token");location.reload();}
+
+function structuredCloneSafe(x){return JSON.parse(JSON.stringify(x))}
+function persist(){localStorage.setItem("ht_settings",JSON.stringify(settings));localStorage.setItem("ht_questions",JSON.stringify(questions));localStorage.setItem("ht_goals",JSON.stringify(goals))}
+function toast(t){let e=document.getElementById("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",1800)}
+function go(id){
+  document.querySelectorAll(".page").forEach(s=>s.classList.add("hidden"));
+  const page=document.getElementById(id);
+  if(!page){alert("Sayfa bulunamadı: "+id);return;}
+  page.classList.remove("hidden");
+  if(id==="home")home();
+  if(id==="new")fillCats();
+  if(id==="pool")pool();
+  if(id==="ranking")rank();
+  if(id==="board")board();
+  if(id==="settings")renderSettings();
+}
+document.querySelectorAll(".nav button[data-page]").forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+function fillCats(){cat.innerHTML=settings.categories.map(c=>`<option>${esc(c)}</option>`).join("")}
+function start(){
+  const nameEl=document.getElementById("name");
+  const catEl=document.getElementById("cat");
+  const n=nameEl ? String(nameEl.value||"").trim() : "";
+
+  if(!n){
+    alert("Önce hedef adını yaz.");
+    if(nameEl)nameEl.focus();
+    return;
+  }
+
+  // Eski/bozuk tarayıcı kaydı varsa testi engellemesin.
+  if(!Array.isArray(questions)||questions.length<1){
+    questions=structuredCloneSafe(DEFAULT_Q);
+    persist();
+  }
+
+  // Her sorunun 8 elemanlı doğru yapıda olduğundan emin ol.
+  questions=questions.filter(q=>Array.isArray(q)&&q.length>=8);
+  if(!questions.length){
+    questions=structuredCloneSafe(DEFAULT_Q);
+    persist();
+  }
+
+  cur={
+    id:"H"+Date.now(),
+    name:n,
+    cat:(catEl&&catEl.value)?catEl.value:"Diğer",
+    a:Array.from({length:questions.length},()=>null),
+    i:0,
+    editing:false,
+    editingIndex:null
+  };
+
+  // Yeni hedefte önce test ekranını aç, sonra ilk soruyu çiz.
+  go("test");
+  renderQ();
+}
+function renderQ(){
+  const x=questions[cur.i];
+  document.getElementById("tg").textContent=cur.name;
+  document.getElementById("count").textContent=`Soru ${cur.i+1} / ${questions.length} · ${x[0]}`;
+  document.getElementById("bar").style.width=((cur.i+1)/questions.length*100)+"%";
+  document.getElementById("area").textContent=x[0];
+  document.getElementById("q").textContent=x[1];
+  document.getElementById("ex").textContent=x[2];
+  const selected=(cur.a[cur.i]===null||cur.a[cur.i]===undefined)?-1:Number(cur.a[cur.i]);
+  document.getElementById("opts").innerHTML=x.slice(3,7).map((v,j)=>
+    `<button type="button" class="option ${selected===j?"selected":""}" onclick="answer(${j})"><b>${"ABCD"[j]}</b> — ${esc(v)}<span class="score">${x[7][j]} puan</span></button>`
+  ).join("");
+  document.getElementById("next").textContent=cur.i===questions.length-1?"Testi Bitir →":"İleri →";
+  const eb=document.getElementById("editFinishBtn");
+  if(eb) eb.classList.toggle("hidden",!(cur.editing===true&&cur.editingIndex!==null&&cur.editingIndex!==undefined));
+}
+function answer(j){cur.a[cur.i]=j;renderQ()}
+function finishEditNow(){
+  if(!cur||cur.editing!==true||cur.editingIndex===null||cur.editingIndex===undefined){
+    alert("Güncelleme modu bulunamadı.");return;
+  }
+  if(!cur.a.every(v=>v!==null&&v!==undefined)){
+    alert("Eksik cevap var. Kaydet ve Bitir için tüm soruları cevapla.");return;
+  }
+  const idx=Number(cur.editingIndex);
+  if(!goals[idx]){alert("Güncellenecek hedef bulunamadı.");return;}
+
+  const scores=calcScores();
+  const saved=cur.a.slice();
+  goals[idx]=Object.assign({},goals[idx],{
+    name:cur.name,
+    cat:cur.cat,
+    a:saved,
+    answers:saved,
+    s:scores,
+    updated:new Date().toISOString()
+  });
+  persist();
+
+  cur=structuredCloneSafe(goals[idx]);
+  cur.a=saved.slice();
+  cur.answers=saved.slice();
+  cur.editing=false;
+  cur.editingIndex=null;
+  cur.s=scores;
+  makeResult();
+}
+function next(){if(cur.a[cur.i]===null){alert("Bu soruda bir seçenek seç.");return}if(cur.i===questions.length-1){makeResult();return}cur.i++;renderQ()}
+function prev(){if(cur.i>0){cur.i--;renderQ()}}
+function confirmGoNew(){if(confirm("Testi bırakmak istiyor musun? Yapılan değişiklikler kaydedilmeyecek."))go("pool")}
+
+function avg(ix){if(!ix.length)return 0;return Math.round(ix.reduce((s,k)=>s+(questions[k]?questions[k].scoreValue:0),0)/ix.length)}
+function calcScores(){
+  const vals=cur.a.map((choice,i)=>{
+    if(choice===null)return 0;
+    const pts=questions[i][7]||[1,2,3,4];
+    return Number(pts[choice])||0;
+  });
+  function groupScore(areas){
+    const ix=questions.map((x,i)=>areas.includes(x[0])?i:-1).filter(i=>i>=0);
+    if(!ix.length)return 0;
+    return Math.round(ix.reduce((sum,i)=>sum+vals[i],0)/ix.length/4*100);
+  }
+  const p=groupScore(["Öncelik","Etki","Zamanlama","Motivasyon"]);
+  const h=groupScore(["Netlik","Motivasyon","Uygulanabilirlik","Plan","Kapasite"]);
+  const z=groupScore(["Zorluk"]);
+  const r=groupScore(["Risk"]);
+  const t=groupScore(["Taahhüt"]);
+  const u=groupScore(["Zamanlama"]);
+  const clarity=vals[0]?Math.round(vals[0]/4*100):0;
+  const success=vals[1]?Math.round(vals[1]/4*100):0;
+  const firstIndex=questions.findIndex(x=>x[1].startsWith("İlk adımı tek cümleyle"));
+  const first=firstIndex>=0&&vals[firstIndex]?Math.round(vals[firstIndex]/4*100):0;
+  if(!cur.a.every(x=>x!==null))return null;
+  let d="HENÜZ HAZIR DEĞİL";
+  if(p>=settings.priority&&h>=settings.prep&&t>=settings.commit&&clarity>=settings.clarity&&success>=settings.success&&first>=settings.firstStep)d="TAHTAYA HAZIR";
+  else if(p<50&&h<50)d="YENİDEN DEĞERLENDİR";
+  else if(p>=60&&h>=60&&t>=60)d="HAZIRLANMALI";
+  let matrix="ÖNEMLİ DEĞİL + ACİL DEĞİL";
+  if(p>=settings.priority&&u>=settings.urgency)matrix="ÖNEMLİ + ACİL";
+  else if(p>=settings.priority)matrix="ÖNEMLİ + ACİL DEĞİL";
+  else if(u>=settings.urgency)matrix="ÖNEMLİ DEĞİL + ACİL";
+  let action="ELE / YENİDEN DEĞERLENDİR";
+  if(matrix==="ÖNEMLİ + ACİL")action="ŞİMDİ YAP";
+  else if(matrix==="ÖNEMLİ + ACİL DEĞİL")action="PLANLA + TAKVİME KOY + KORU";
+  else if(matrix==="ÖNEMLİ DEĞİL + ACİL")action="SINIRLA / DEVRET / KISA SÜREDE BİTİR";
+  return {p,h,z,r,t,u,d,clarity,success,first,matrix,action};
+;document.getElementById("editFinishBtn").classList.toggle("hidden",!(cur&&cur.editingIndex!==null&&cur.editingIndex!==undefined));}
+function makeResult(){cur.s=calcScores();if(!cur.s){alert("Test tamamlanmadan analiz oluşturulamaz.");return}
+  if(cur && cur.id){
+    const copy=structuredCloneSafe(cur);
+    copy.created=copy.created||new Date().toISOString();
+    copy.locked=copy.locked===true;
+    copy.qSnapshot=structuredCloneSafe(questions);
+    copy.answers=structuredCloneSafe(copy.a||copy.answers||[]);
+    delete copy.i; delete copy.editing; delete copy.editingIndex;
+    const idx=goals.findIndex(x=>x.id===copy.id);
+    if(idx>=0){
+      if(goals[idx].locked){copy.locked=true;copy.boardDate=goals[idx].boardDate;}
+      goals[idx]=Object.assign({},goals[idx],copy);
+    }else goals.push(copy);
+    persist();
+    if(window.ONLINE_CONFIG.enabled && onlineToken) syncGoal(copy);
+  }document.getElementById("rg").textContent=cur.name;document.getElementById("saveBtn").textContent="Hedef Havuzuna Git";document.getElementById("saveBtn").onclick=function(){cur=null;go("pool")};let s=cur.s;document.getElementById("boardBtn").classList.toggle("hidden",s.d!=="TAHTAYA HAZIR");let weak=[];if(s.p<settings.priority)weak.push("öncelik");if(s.h<settings.prep)weak.push("hazırlık");if(s.t<settings.commit)weak.push("taahhüt");if(s.clarity<settings.clarity)weak.push("hedef netliği");if(s.success<settings.success)weak.push("başarı ölçütü");if(s.first<settings.firstStep)weak.push("ilk adım");let strong=[];if(s.p>=75)strong.push("öncelik");if(s.h>=75)strong.push("hazırlık");if(s.t>=75)strong.push("taahhüt");document.getElementById("res").innerHTML=`<div class="grid">${[["Öncelik",s.p],["Hazırlık",s.h],["Aciliyet",s.u],["Zorluk",s.z],["Risk",s.r],["Taahhüt",s.t]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}/100</b><div class="scorebar"><div style="width:${x[1]}%"></div></div></div>`).join("")}</div>
+<div class="card"><div class="grid2"><div><h3>Önem Durumu</h3><p><b>${importanceLabel(s.p)}</b> — Öncelik ${s.p}/100</p></div><div><h3>Aciliyet Durumu</h3><p><b>${urgencyLabel(s.u)}</b> — Aciliyet ${s.u}/100</p></div></div></div>
+<div class="card"><h2>${s.d}</h2><p>${decisionText(s)}</p><div class="grid2"><div><h3>Güçlü yönler</h3><p>${strong.length?strong.join(", ")+" alanında güçlü görünüyorsun.":"Henüz belirgin bir güçlü alan baskın değil."}</p></div><div><h3>Eksikler</h3><p>${weak.length?weak.join(", ")+" tarafında açık var.":"Temel karar eşiklerinde belirgin açık görünmüyor."}</p></div></div></div>
+<div class="card"><h3>İlk yapılması gereken</h3><p>${action(s)}</p><h3>Tahtaya alırsan senden ne bekleniyor?</h3><p>Bu hedef artık niyet değil taahhüttür. Gerçek zaman, enerji, kaynak ve fırsat maliyetini üstlenmen gerekir.</p><div class="notice"><b>Bu bedeli gerçekten ödemeye hazır mısın?</b></div></div>`;
+  document.getElementById("res").innerHTML += `<section class="card urgency-section">
+    <h2 style="margin-top:0">⏱️ Aciliyet ve Eisenhower</h2>
+    <div class="urgency-hero">
+      <div class="score-label">ACİLİYET SKORU</div>
+      <div style="display:flex;align-items:end;gap:12px;margin-top:8px">
+        <div class="score-big">${s.u}/100</div>
+        <div class="urgency-level">${urgencyLevel(s.u)}</div>
+      </div>
+      <div class="meter"><div class="meter-fill ${urgencyBarClass(s.u)}" style="width:${s.u}%"></div></div>
+      <div class="matrix-caption">Bu skor hedefin zaman baskısını gösterir. 70 ve üzeri sistemde “acil” kabul edilir.</div>
+    </div>
+    <div class="notice" style="margin-top:14px"><b>Eisenhower Kararı: ${s.matrix}</b><br>${matrixExplanation(s.matrix)}</div>
+    ${matrixVisual(s)}
+    <div style="margin-top:14px"><span class="action-pill">Önerilen davranış: ${s.action}</span></div>
+    <p class="muted" style="margin-bottom:0">Eisenhower katmanı ana öncelik sıralamasını değiştirmez ve tek başına hedefi tahtaya hazır yapmaz.</p>
+  </section>`;
+go("result")}
+function decisionText(s){if(s.d==="TAHTAYA HAZIR")return"Öncelik, hazırlık ve taahhüt eşikleri karşılanıyor. Netlik, başarı ölçütü ve ilk adım da yeterli. Zorluk veya risk yüksek olsa bile bunlar tek başına hedefi reddetme sebebi değildir. Bu hedef, geri indirilmeyecek bir taahhüt için hazır görünüyor.";if(s.d==="HAZIRLANMALI")return"Enerji vermeye değer olabilir; ancak mevcut hazırlık veya taahhüt seviyesi tahtaya giriş standardını karşılamıyor. Eksikleri kapatmadan taahhüt verme.";if(s.d==="YENİDEN DEĞERLENDİR")return"Öncelik ve hazırlık birlikte düşük. Buradaki sorun yalnızca uygulama değil; hedefin gerçekten sana ait olup olmadığı veya nedeninin yeterince güçlü olup olmadığı olabilir.";return"Bu hedef şu anda tahtaya alınmamalı. Düşük kalan kriterleri düzelt, sonra testi yeniden değerlendir."}
+function action(s){if(s.clarity<settings.clarity)return"Hedefi tek bir ölçülebilir sonuç halinde yeniden tanımla.";if(s.success<settings.success)return"Başarı kriterini sayı, tarih veya doğrulanabilir çıktı ile belirle.";if(s.first<settings.firstStep)return"İlk adımı ve ne zaman yapacağını netleştir.";if(s.h<settings.prep)return"Zaman, kaynak ve uygulanabilirlik açığını kapat.";if(s.t<settings.commit)return"Bu hedef için gerçekten vazgeçeceğin şeyleri belirle.";return"İlk uygulanabilir adımı takvime koy ve başlat."}
+function saveGoal(){
+  if(!cur||!cur.s)return;
+  if(cur.editingIndex!==null&&cur.editingIndex!==undefined){
+    const g=goals[cur.editingIndex];
+    if(!g||g.locked){alert("Bu hedef güncellenemez.");return}
+    g.name=cur.name;
+    g.cat=cur.cat;
+    g.a=structuredCloneSafe(cur.a);
+    g.answers=structuredCloneSafe(cur.a);
+    g.s=structuredCloneSafe(cur.s);
+    g.updated=new Date().toISOString();
+    g.qSnapshot=structuredCloneSafe(questions);
+    persist();
+    if(window.ONLINE_CONFIG.enabled && onlineToken) syncGoal(g);
+    toast("Hedef güncellendi.");
+    cur=null;
+    go("pool");
+    return;
+  }
+  const existing=goals.find(x=>x.id===cur.id);
+  if(existing){alert("Bu hedef zaten havuzda.");return;}
+  let copy=structuredCloneSafe(cur);
+  copy.created=new Date().toISOString();
+  copy.locked=false;
+  copy.qSnapshot=structuredCloneSafe(questions);
+  copy.answers=structuredCloneSafe(copy.a);
+  delete copy.i;
+  delete copy.editingIndex;
+  goals.push(copy);
+  persist();
+  if(window.ONLINE_CONFIG.enabled && onlineToken) syncGoal(copy);
+  toast("Hedef havuza eklendi.");
+  cur=null;
+  go("pool");
+}
+function addToBoard(){
+  if(!cur||!cur.s)return;
+  if(cur.s.d!=="TAHTAYA HAZIR"){
+    alert("Bu hedef henüz tahta kriterlerini karşılamıyor.");
+    return;
+  }
+  let g=goals.find(x=>x.id===cur.id);
+  if(!g){
+    let copy=structuredCloneSafe(cur);
+    copy.created=new Date().toISOString();
+    copy.locked=true;
+    copy.boardDate=new Date().toISOString();
+    copy.qSnapshot=structuredCloneSafe(questions);
+    delete copy.i;
+    goals.push(copy);
+  }else{
+    g.locked=true;
+    g.boardDate=g.boardDate||new Date().toISOString();
+  }
+  persist();
+  if(window.ONLINE_CONFIG.enabled && onlineToken){const bg=goals.find(x=>x.id===cur.id);if(bg)syncBoard(bg.id);}
+  alert("Hedef Hedef Tahtası'na alındı. Bu hedef artık kilitlidir ve geri indirilemez.");
+  go("board");
+}
+function statusClass(d){return d==="TAHTAYA HAZIR"?"good":d==="HAZIRLANMALI"?"warn":d==="YENİDEN DEĞERLENDİR"?"bad":"darkbadge"}
+function pool(){
+  goals=goals.map(normalizeGoal);
+  poolT.innerHTML=goals.length?goals.map((g,i)=>`<tr>
+<td><b>${esc(g.name)}</b><br><small>${esc(g.cat)}</small></td>
+<td><div class="decision-group"><span class="tag">Öncelik: ${g.s.p}</span><span class="tag">Hazırlık: ${g.s.h}</span><span class="tag">Taahhüt: ${g.s.t}</span><span class="tag">Risk: ${g.s.r}</span></div></td>
+<td><span class="tag">${matrixDisplay(g.s.matrix)}</span></td>
+<td><span class="badge ${statusClass(g.locked?"TAHTAYA HAZIR":g.s.d)}">${g.locked?"TAHTADA":g.s.d}</span></td>
+<td><div class="row">${g.locked?"<span class='mini muted'>Kilitli</span>":`<button class="primary" onclick="reviewGoal(${i})">Güncelle</button> <button class="ghost" onclick="showSavedReport(${i})">Rapor</button> <button class="danger" onclick="deleteGoal(${i})">Sil</button>`}</div></td>
+</tr>`).join(""):`<tr><td colspan="5" class="muted">Henüz hedef yok.</td></tr>`
+}
+function reviewGoal(index){
+  const g=goals[index];
+  if(!g){alert("Hedef bulunamadı.");return;}
+  if(g.locked){alert("Tahtaya alınmış hedef değiştirilemez.");return;}
+  cur=structuredCloneSafe(g);
+  cur.editing=true;
+  cur.editingIndex=index;
+  cur.i=0;
+
+  // Kayıtlı cevapların gerçek alanı "a"; eski sürümlerdeki "answers" da desteklenir.
+  const savedAnswers=Array.isArray(g.a)?g.a:(Array.isArray(g.answers)?g.answers:[]);
+  cur.a=Array.from({length:questions.length},(_,k)=>{
+    const v=savedAnswers[k];
+    return (v===0||v===1||v===2||v===3)?Number(v):null;
+  });
+
+  go("test");
+  renderQ();
+}
+function showSavedReport(i){
+  cur=structuredCloneSafe(goals[i]);
+  cur.editingIndex=i;
+  document.getElementById("boardBtn").classList.toggle("hidden",cur.s.d!=="TAHTAYA HAZIR"||cur.locked);
+  document.getElementById("rg").textContent=cur.name;
+  document.getElementById("saveBtn").textContent="Değişiklikleri Kaydet";
+  renderSavedResult(cur.s);
+  go("result");
+}
+function renderSavedResult(s){
+  let weak=[];
+  if(s.p<settings.priority)weak.push("öncelik");
+  if(s.h<settings.prep)weak.push("hazırlık");
+  if(s.t<settings.commit)weak.push("taahhüt");
+  if(s.clarity<settings.clarity)weak.push("hedef netliği");
+  if(s.success<settings.success)weak.push("başarı ölçütü");
+  if(s.first<settings.firstStep)weak.push("ilk adım");
+  let strong=[];
+  if(s.p>=75)strong.push("öncelik");
+  if(s.h>=75)strong.push("hazırlık");
+  if(s.t>=75)strong.push("taahhüt");
+  document.getElementById("res").innerHTML += `<div class="card"><h3>Eisenhower Zamanlama Katmanı</h3><div class="urgency-hero"><div class="score-label">Aciliyet Skoru</div><div style="display:flex;align-items:end;gap:10px;margin-top:7px"><div class="score-big">${s.u===undefined?"-":s.u}/100</div><div class="urgency-level">${s.u===undefined?"Eski kayıt":urgencyLevel(s.u)}</div></div>${s.u!==undefined?`<div class="meter"><div class="meter-fill ${urgencyBarClass(s.u)}" style="width:${s.u}%"></div></div>`:""}<div class="matrix-caption">Aciliyet, hedefin zaman baskısını gösterir.</div></div><div class="notice" style="margin-top:14px"><b>${s.matrix||"Aciliyet katmanı henüz hesaplanmadı"}</b><br>${s.matrix?matrixExplanation(s.matrix):"Eski bir kayıt ise testi güncelleyerek aciliyet katmanını oluşturabilirsiniz."}</div>${s.matrix?matrixVisual(s):""}</div>`;
+  document.getElementById("res").innerHTML=`<div class="grid">${[["Öncelik",s.p],["Hazırlık",s.h],["Aciliyet",s.u],["Zorluk",s.z],["Risk",s.r],["Taahhüt",s.t]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}/100</b><div class="scorebar"><div style="width:${x[1]}%"></div></div></div>`).join("")}</div>
+<div class="card"><div class="grid2"><div><h3>Önem Durumu</h3><p><b>${importanceLabel(s.p)}</b> — Öncelik ${s.p}/100</p></div><div><h3>Aciliyet Durumu</h3><p><b>${urgencyLabel(s.u)}</b> — Aciliyet ${s.u}/100</p></div></div></div>
+  <div class="card"><h2>${s.d}</h2><p>${decisionText(s)}</p><div class="grid2"><div><h3>Güçlü yönler</h3><p>${strong.length?strong.join(", ")+" alanında güçlü görünüyorsun.":"Henüz belirgin bir güçlü alan baskın değil."}</p></div><div><h3>Eksikler</h3><p>${weak.length?weak.join(", ")+" tarafında açık var.":"Temel karar eşiklerinde belirgin açık görünmüyor."}</p></div></div></div>
+  <div class="card"><h3>İlk yapılması gereken</h3><p>${action(s)}</p><h3>Tahtaya alırsan senden ne bekleniyor?</h3><p>Bu hedef artık niyet değil taahhüttür. Gerçek zaman, enerji, kaynak ve fırsat maliyetini üstlenmen gerekir.</p><div class="notice"><b>Bu bedeli gerçekten ödemeye hazır mısın?</b></div></div>`;
+}async function deleteGoal(i){if(goals[i].locked){alert("Tahtaya alınmış hedef silinemez.");return}if(confirm("Bu hedefi havuzdan silmek istediğine emin misin?")){const id=goals[i].id;if(onlineToken && !(await deleteOnlineGoal(id)))return;goals.splice(i,1);persist();pool();toast("Hedef silindi.")}}
+function rank(){
+  goals=goals.map(normalizeGoal);
+  let a=[...goals].sort((x,y)=>{
+    let lx=x.locked?1:0,ly=y.locked?1:0;
+    if(lx!==ly)return ly-lx;
+    let sx=x.s.p*1.2+x.s.h*.7+x.s.t*.4-x.s.r*.25;
+    let sy=y.s.p*1.2+y.s.h*.7+y.s.t*.4-y.s.r*.25;
+    return sy-sx;
+  });
+  window._ranked=a;
+  rankT.innerHTML=a.length?a.map((x,i)=>`<tr>
+<td><b>${esc(x.name)}</b><br><small>#${i+1}</small></td>
+<td><div class="decision-group"><span class="tag">Öncelik: ${x.s.p}</span><span class="tag">Hazırlık: ${x.s.h}</span><span class="tag">Taahhüt: ${x.s.t}</span><span class="tag">Risk: ${x.s.r}</span></div></td>
+<td><span class="tag">${matrixDisplay(x.s.matrix)}</span></td>
+<td><span class="badge ${statusClass(x.locked?"TAHTAYA HAZIR":x.s.d)}">${x.locked?"TAHTADA":x.s.d}</span></td>
+<td>${x.locked?"<span class='mini muted'>Kilitli</span>":`<button class="primary" onclick="reviewGoal(${goals.indexOf(x)})">Güncelle</button>`}</td>
+<td><button class="secondary" onclick="showRankReason(${i})">Neden bu sıra?</button></td>
+</tr>`).join(""):`<tr><td colspan="6" class="muted">Henüz hedef yok.</td></tr>`
+}
+function matrixDisplay(m){
+  if(!m)return "-";
+  if(m.includes("ÖNEMLİ + ACİL DEĞİL"))return "🟠 Önemli + Acil Değil";
+  if(m.includes("ÖNEMLİ DEĞİL + ACİL DEĞİL"))return "⚪ Önemli Değil + Acil Değil";
+  if(m.includes("ÖNEMLİ DEĞİL + ACİL"))return "🟡 Önemli Değil + Acil";
+  if(m.includes("ÖNEMLİ + ACİL"))return "🔴 Önemli + Acil";
+  return m;
+}
+function importanceLabel(v){return Number(v)>=settings.priority?"ÖNEMLİ":"ÖNEMLİ DEĞİL";}
+function urgencyLabel(v){if(v===null||v===undefined||v==="")return "ACİLİYET YOK";return Number(v)>=settings.urgency?"ACİL":"ACİL DEĞİL";}
+function normalizeSearchText(v){return String(v===undefined||v===null?"":v).toLocaleLowerCase("tr-TR").replace(/ı/g,"i").replace(/ş/g,"s").replace(/ğ/g,"g").replace(/ü/g,"u").replace(/ö/g,"o").replace(/ç/g,"c");}
+function liveBoardFilter(){
+  const q=normalizeSearchText(document.getElementById("boardFilter").value);
+  document.querySelectorAll("#boardT > .card").forEach(r=>r.classList.toggle("hidden-row",q!==""&&!normalizeSearchText(r.textContent).includes(q)));
+}
+function liveFilter(inputId,sectionId){const q=normalizeSearchText(document.getElementById(inputId).value);document.querySelectorAll("#"+sectionId+" tbody tr").forEach(r=>r.classList.toggle("hidden-row",q!==""&&!normalizeSearchText(r.textContent).includes(q)));}
+function urgencyLevel(v){
+  if(v>=85)return "Çok yüksek";
+  if(v>=70)return "Yüksek";
+  if(v>=50)return "Orta";
+  if(v>=30)return "Düşük";
+  return "Çok düşük";
+}
+function urgencyBarClass(v){
+  if(v>=70)return "high";
+  if(v>=50)return "mid";
+  return "low";
+}
+function matrixVisual(s){
+  const m=s.matrix||"ÖNEMLİ DEĞİL + ACİL DEĞİL";
+  return `<div class="matrix-visual">
+    <div class="matrix-head"></div>
+    <div class="matrix-head">🔴 ACİL</div>
+    <div class="matrix-head">⏳ ACİL DEĞİL</div>
+    <div class="matrix-axis">⭐ ÖNEMLİ</div>
+    <div class="matrix-cell ${m==="ÖNEMLİ + ACİL"?"matrix-selected":""}">
+      <strong>ŞİMDİ YAP</strong><small>Önemli + acil</small>
+      ${m==="ÖNEMLİ + ACİL"?'<span class="matrix-dot"></span>':""}
+    </div>
+    <div class="matrix-cell ${m==="ÖNEMLİ + ACİL DEĞİL"?"matrix-selected":""}">
+      <strong>PLANLA + KORU</strong><small>Önemli + acil değil</small>
+      ${m==="ÖNEMLİ + ACİL DEĞİL"?'<span class="matrix-dot"></span>':""}
+    </div>
+    <div class="matrix-axis">○ ÖNEMSİZ</div>
+    <div class="matrix-cell ${m==="ÖNEMLİ DEĞİL + ACİL"?"matrix-selected":""}">
+      <strong>SINIRLA / DEVRET</strong><small>Önemsiz + acil</small>
+      ${m==="ÖNEMLİ DEĞİL + ACİL"?'<span class="matrix-dot"></span>':""}
+    </div>
+    <div class="matrix-cell ${m==="ÖNEMLİ DEĞİL + ACİL DEĞİL"?"matrix-selected":""}">
+      <strong>ELE / YENİDEN DEĞERLENDİR</strong><small>Önemsiz + acil değil</small>
+      ${m==="ÖNEMLİ DEĞİL + ACİL DEĞİL"?'<span class="matrix-dot"></span>':""}
+    </div>
+  </div>`;
+}
+
+function matrixExplanation(m){
+  if(m==="ÖNEMLİ + ACİL")return "Önceliği yüksek ve zaman baskısı belirgin. Öncelikli eylem alanıdır.";
+  if(m==="ÖNEMLİ + ACİL DEĞİL")return "Önceliği yüksek fakat güçlü bir zaman baskısı yok. Takvime koy, düzenli çalış ve koru.";
+  if(m==="ÖNEMLİ DEĞİL + ACİL")return "Zaman baskısı var fakat stratejik önemi düşük. Mümkünse sınırla, devret veya kısa sürede bitir.";
+  return "Ne stratejik önceliği ne de belirgin aciliyeti var. Ele veya yeniden değerlendir.";
+}
+function showRankReason(i){
+  const a=window._ranked||[];
+  const g=a[i];
+  if(!g)return;
+  const position=i+1;
+  const locked=g.locked;
+  let factors=[];
+  if(g.s.p>=75)factors.push("yüksek öncelik"); else if(g.s.p<60)factors.push("düşük öncelik");
+  if(g.s.h>=75)factors.push("yüksek hazırlık"); else if(g.s.h<60)factors.push("düşük hazırlık");
+  if(g.s.t>=75)factors.push("yüksek taahhüt"); else if(g.s.t<60)factors.push("düşük taahhüt");
+  if(g.s.r<=40)factors.push("düşük risk"); else if(g.s.r>=60)factors.push("yüksek risk");
+  let summary=esc(g.name)+" şu anda "+position+". sırada. ";
+  if(locked)summary+="Bu hedef tahtada olduğu için kilitli hedef önceliği uygulanır. ";
+  const rankScore=(g.s.p*1.2+g.s.h*.7+g.s.t*.4-g.s.r*.25);
+  summary+="Sıralamada "+(factors.join(", ")||"dengeli skorlar")+" etkili oldu. Matematiksel sıralama puanı: <b>"+rankScore.toFixed(2)+"</b>.";
+  document.getElementById("rankTitle").textContent=position+". sıra — "+g.name;
+  document.getElementById("rankSummary").innerHTML=summary;
+  document.getElementById("rankReason").innerHTML="Bu sıralama tek bir skora bakılarak yapılmıyor. <b>Öncelik ("+g.s.p+")</b> en güçlü etken, ardından <b>Hazırlık ("+g.s.h+")</b> ve <b>Taahhüt ("+g.s.t+")</b> geliyor. <b>Risk ("+g.s.r+")</b> yükseldikçe sıralama puanı bir miktar düşüyor. Zorluk ise doğrudan ceza değildir; zor bir hedef otomatik olarak önemsiz değildir.";
+  document.getElementById("rankDetail").innerHTML='<div class="card"><b>Detaylı prensip ve matematiksel hesap</b><ol><li><b>Tahtadaki hedefler önce gelir.</b> Bunlar zaten taahhüt edilmiş hedeflerdir.</li><li><b>Öncelik ana belirleyicidir.</b> Öncelik skoru en yüksek ağırlığa sahiptir.</li><li><b>Hazırlık ikinci belirleyicidir.</b> Hazır olmayan hedef, yalnızca önemli olduğu için otomatik olarak öne geçmez.</li><li><b>Taahhüt üçüncü belirleyicidir.</b> Hedefin gerçek bedelini üstlenme düzeyi hesaba katılır.</li><li><b>Risk düzeltme faktörüdür.</b> Risk arttıkça sıralama puanı azalır.</li><li><b>Zorluk bu matematiksel sıralama puanına doğrudan eklenmez.</b> Çünkü zor bir hedef otomatik olarak daha önemsiz değildir.</li></ol><div class="notice"><b>Sıralama puanı formülü:</b><br><br><code>(Öncelik × 1,20) + (Hazırlık × 0,70) + (Taahhüt × 0,40) − (Risk × 0,25)</code><br><br><b>Örnek:</b> Öncelik 80, Hazırlık 70, Taahhüt 90, Risk 40 ise:<br><code>(80 × 1,20) + (70 × 0,70) + (90 × 0,40) − (40 × 0,25) = 96 + 49 + 36 − 10 = 171</code><br><br>Bu puan hedeflerin birbirine göre sırasını belirlemek için kullanılır. <b>Puan yükseldikçe hedef listede daha üst sıraya çıkar.</b></div><div class="card"><b>Bu formülde ne neden var?</b><ul><li><b>× 1,20 Öncelik:</b> Sistemin ana sorusu “Bu hedefi ne kadar öncelemeliyim?” olduğu için en yüksek ağırlık buradadır.</li><li><b>× 0,70 Hazırlık:</b> Önemli bir hedefin uygulanabilir olması gerekir. Hazırlık yükseldikçe sıra güçlenir.</li><li><b>× 0,40 Taahhüt:</b> Hedefi gerçekten üstlenme kapasitesi sıralamayı destekler.</li><li><b>− × 0,25 Risk:</b> Aynı öncelik düzeyinde daha kontrollü hedefin öne çıkmasını sağlar.</li><li><b>Zorluk:</b> Ayrı gösterilir; sıralamayı tek başına belirlemez.</li></ul></div><p><b>Önemli ayrım:</b> Bu puan “başarı ihtimali” veya “hedefin değeri” değildir. Hedeflerin <b>göreli öncelik sırasını</b> belirleyen karar puanıdır. Tahtaya giriş kararı ise ayrıca Öncelik, Hazırlık, Taahhüt, Netlik, İlk Adım ve Başarı Ölçütü eşiklerini kontrol eder.</p><p><b>Eisenhower kararı:</b> Bu hedef için <b>${matrixDisplay(g.s.matrix)}</b> sonucu, Öncelik ve Aciliyet eşiklerinin kesişiminden gelir. Bu sonuç ana sıralama puanına eklenmez; yalnızca zamanlama davranışını belirler.</p><p><b>Amaç:</b> En kolay hedefi değil; önemli, yeterince hazır, üstlenilebilir ve görece kontrollü hedefi öne almaktır.</p></div>';
+  document.getElementById("rankDetail").classList.add("hidden");
+  document.getElementById("rankModal").classList.add("show");
+}
+function toggleRankDetail(){document.getElementById("rankDetail").classList.toggle("hidden")}
+function closeRankReason(){document.getElementById("rankModal").classList.remove("show")}
+function board(){
+  goals=goals.map(normalizeGoal);
+let a=goals.filter(x=>x.locked);boardT.innerHTML=a.length?a.map(x=>`<div class="card"><div class="row between"><h2>${esc(x.name)}</h2><span class="badge good">KİLİTLİ</span></div><p>Öncelik ${x.s.p} · Zorluk ${x.s.z} · Taahhüt ${x.s.t}</p><div class="notice">Bu hedef tahtaya alındıktan sonra uygulama üzerinden geri indirilemez.</div></div>`).join(""):`<div class="card muted">Henüz tahtaya alınmış hedef yok.</div>`}
+
+function renderSettings(){thresholds.innerHTML=[["priority","Öncelik eşiği"],["prep","Hazırlık eşiği"],["commit","Taahhüt eşiği"],["clarity","Netlik eşiği"],["firstStep","İlk adım eşiği"],["success","Başarı ölçütü eşiği"]].map(x=>`<div class="setting-row"><div>${x[1]}</div><input type="number" min="0" max="100" id="set_${x[0]}" value="${settings[x[0]]}"></div>`).join("");cats.innerHTML=settings.categories.map((c,i)=>`<div class="row" style="margin:6px 0"><span style="flex:1">${esc(c)}</span><button class="danger" onclick="removeCategory(${i})">Çıkar</button></div>`).join("");questionsEdit.innerHTML=questions.map((x,i)=>questionEditor(x,i)).join("")}
+function questionEditor(x,i){return`<div class="card"><div class="question-edit"><div><b>Soru ${i+1}</b><select onchange="editQ(${i},'area',this.value)"><option ${x[0]==="Netlik"?"selected":""}>Netlik</option><option ${x[0]==="Motivasyon"?"selected":""}>Motivasyon</option><option ${x[0]==="Etki"?"selected":""}>Etki</option><option ${x[0]==="Zamanlama"?"selected":""}>Zamanlama</option><option ${x[0]==="Öncelik"?"selected":""}>Öncelik</option><option ${x[0]==="Zorluk"?"selected":""}>Zorluk</option><option ${x[0]==="Kaynak"?"selected":""}>Kaynak</option><option ${x[0]==="Bağımlılık"?"selected":""}>Bağımlılık</option><option ${x[0]==="Risk"?"selected":""}>Risk</option><option ${x[0]==="Taahhüt"?"selected":""}>Taahhüt</option><option ${x[0]==="Uygulanabilirlik"?"selected":""}>Uygulanabilirlik</option><option ${x[0]==="Plan"?"selected":""}>Plan</option><option ${x[0]==="Kapasite"?"selected":""}>Kapasite</option></select></div><div><input value="${escAttr(x[1])}" onchange="editQ(${i},'q',this.value)"><textarea onchange="editQ(${i},'ex',this.value)">${esc(x[2])}</textarea></div></div>${[0,1,2,3].map(j=>`<div class="option-edit"><b>${"ABCD"[j]}</b><input value="${escAttr(x[3+j])}" onchange="editQ(${i},${3+j},this.value)"><input type="number" min="1" max="4" value="${x[7][j]}" onchange="editScore(${i},${j},this.value)"></div>`).join("")}<button class="danger" onclick="removeQuestion(${i})">Bu soruyu çıkar</button></div>`}
+function editQ(i,k,v){if(k==="area")questions[i][0]=v;else if(k==="q")questions[i][1]=v;else if(k==="ex")questions[i][2]=v;else questions[i][k]=v;persist();if(onlineToken)syncProfile();toast("Soru güncellendi.")}
+function editScore(i,j,v){questions[i][7][j]=Math.max(1,Math.min(4,Number(v)||1));persist();if(onlineToken)syncProfile();toast("Puan güncellendi.")}
+function addQuestion(){questions.push(["Yeni Alan","Yeni soruyu yaz.","Sorunun kullanıcıdan ne istediğini ve nasıl objektif değerlendireceğini kısa bir örnekle açıkla.","A seçeneği","B seçeneği","C seçeneği","D seçeneği",[1,2,3,4]]);persist();if(onlineToken)syncProfile();renderSettings();toast("Yeni soru eklendi.")}
+function removeQuestion(i){if(questions.length<=10){alert("Sistemin anlamlı çalışması için en az 10 soru bırakmalısın.");return}if(confirm("Bu soruyu çıkarmak istediğine emin misin?")){questions.splice(i,1);persist();if(onlineToken)syncProfile();renderSettings()}}
+function addCategory(){let c=newCat.value.trim();if(!c)return;if(settings.categories.includes(c)){alert("Bu kategori zaten var.");return}settings.categories.push(c);newCat.value="";persist();if(onlineToken)syncProfile();renderSettings()}
+function removeCategory(i){if(settings.categories.length<=1){alert("En az bir kategori kalmalı.");return}if(confirm("Kategoriyi çıkarmak istediğine emin misin?")){settings.categories.splice(i,1);if(onlineToken)syncProfile();persist();renderSettings()}}
+function saveSettings(){["priority","prep","commit","clarity","firstStep","success"].forEach(k=>settings[k]=Math.max(0,Math.min(100,Number(document.getElementById("set_"+k).value)||0)));persist();if(onlineToken)syncProfile();toast("Ayarlar kaydedildi.")}
+function exportData(){let data={version:2,settings,questions,goals,exportedAt:new Date().toISOString()};let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="hedef_tahtasi_yedek_"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!d.settings||!d.questions||!Array.isArray(d.goals))throw Error();settings=d.settings;questions=d.questions;goals=d.goals;persist();renderSettings();home();toast("Yedek geri yüklendi.")}catch(err){alert("Geçersiz veya bozuk yedek dosyası.")}};r.readAsText(f)}
+function resetAll(){if(!confirm("Tüm hedefler, ayarlar ve soru değişiklikleri silinecek. Emin misin?"))return;localStorage.removeItem("ht_goals");localStorage.removeItem("ht_settings");localStorage.removeItem("ht_questions");location.reload()}
+function normalizeGoal(g){
+  if(!g||!g.s)return g;
+  if(g.s.u===undefined){
+    // Legacy records: urgency may not exist. Keep them intact rather than inventing a score.
+    g.s.u=null;
+    g.s.matrix="ESKİ KAYIT — ACİLİYET YOK";
+  }
+  return g;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function escAttr(s){return esc(s).replace(/`/g,"&#096;")}
+function home(){stats.innerHTML=`<div class="stat"><span>Toplam hedef</span><b>${goals.length}</b></div><div class="stat"><span>Tahtada</span><b>${goals.filter(x=>x.locked).length}</b></div><div class="stat"><span>Tahtaya hazır</span><b>${goals.filter(x=>x.s.d==="TAHTAYA HAZIR").length}</b></div><div class="stat"><span>Bekleyen</span><b>${goals.filter(x=>x.s.d!=="TAHTAYA HAZIR"&&!x.locked).length}</b></div><div class="stat"><span>Soru sayısı</span><b>${questions.length}</b></div>`}
+document.addEventListener("DOMContentLoaded", async function(){
+  fillCats();
+  if(window.ONLINE_CONFIG.enabled){
+    if(onlineToken){
+      try{await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
+      catch(e){sessionStorage.removeItem("ht_online_token");onlineToken="";document.getElementById("authMsg").textContent="Oturum süresi dolmuş olabilir. Yeniden giriş yap.";document.getElementById("authScreen").classList.remove("hidden");}
+    }else{document.getElementById("authScreen").classList.remove("hidden");}
+  }else{home();go("home");}
+});
+</script></body></html>
