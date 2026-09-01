@@ -10,7 +10,7 @@
 .side{width:245px;background:var(--dark);color:#fff;padding:22px 15px;position:sticky;top:0;height:100vh}.brand{font-size:20px;font-weight:800;margin:0 8px 24px}.brand small{display:block;color:#98a2b3;font-size:11px;margin-top:5px}.nav button{display:block;width:100%;padding:12px;margin:4px 0;text-align:left;background:transparent;color:#cbd5e1;border:0;border-radius:9px}.nav button:hover,.nav button.active{background:#263449;color:#fff}.nav .section{color:#667085;font-size:11px;text-transform:uppercase;margin:18px 8px 5px}
 main{max-width:1250px;width:100%;padding:30px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}h1{margin:0 0 5px;font-size:29px}h2{margin-top:0}h3{margin-bottom:8px}.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px;margin:15px 0;box-shadow:0 3px 12px #10182808}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.stat b{display:block;font-size:27px;margin:3px 0}.stat span{color:var(--muted);font-size:13px}
-button{cursor:pointer;border:0;border-radius:9px;padding:11px 16px;font-weight:700}.primary{background:var(--accent);color:#fff}.primary:hover{background:var(--accent2)}.secondary{background:#e8eef6;color:var(--accent)}.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}.danger{background:#fee4e2;color:var(--bad)}
+button{cursor:pointer;border:0;border-radius:9px;padding:11px 16px;font-weight:700}.primary{background:var(--accent);color:#fff}.primary:disabled,.secondary:disabled{opacity:.55;cursor:wait}.primary:hover{background:var(--accent2)}.secondary{background:#e8eef6;color:var(--accent)}.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}.danger{background:#fee4e2;color:var(--bad)}
 input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:var(--ink)}textarea{min-height:90px;resize:vertical}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.hidden{display:none}.auth-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}.auth-box{max-width:430px;width:100%;background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 12px 40px #10182818}.auth-box h1{font-size:25px}.auth-box .row>*{flex:1}
 .notice{border-left:4px solid var(--accent);background:#f8fafc;padding:15px;line-height:1.55}.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress div{height:100%;background:var(--accent);transition:.2s}.question{font-size:22px;font-weight:800;margin:8px 0 12px}.explain{color:var(--muted);line-height:1.55}.options{display:grid;gap:10px}.option{text-align:left;background:#fff;border:1px solid var(--line);padding:15px}.option:hover{border-color:#7890ad}.option.selected{border:2px solid var(--accent);background:#eef4fb}.option .score{float:right;color:var(--muted);font-size:12px}
 .badge{padding:5px 9px;border-radius:99px;font-weight:800;font-size:12px}.good{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}.darkbadge{background:#e5e7eb;color:#374151}
@@ -41,7 +41,7 @@ window.ONLINE_CONFIG = {
     <div style="height:10px"></div>
     <label><b>Şifre</b></label><input id="authPassword" type="password" placeholder="En az 8 karakter" autocomplete="current-password">
     <div style="height:14px"></div>
-    <div class="row"><button class="primary" onclick="loginOnline()">Giriş Yap</button><button class="secondary" onclick="registerOnline()">Yeni Hesap Oluştur</button></div>
+    <div class="row"><button type="button" class="secondary" id="loginBtn" onclick="loginOnline()">Giriş Yap</button><button type="button" class="primary" id="registerBtn" onclick="registerOnline()">Yeni Hesap Oluştur</button></div>
     <p id="authMsg" class="muted" style="margin-bottom:0"></p>
   </div>
 </div>
@@ -147,16 +147,18 @@ async function api(path,options={}){
   return data;
 }
 async function loginOnline(){
+  const btn=document.getElementById("loginBtn"); if(btn) btn.disabled=true;
   const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
   if(!email||!password){document.getElementById("authMsg").textContent="E-posta ve şifre gerekli.";return;}
   try{const d=await api("/api/login",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
-  catch(e){document.getElementById("authMsg").textContent=e.message;}
+  catch(e){document.getElementById("authMsg").textContent=e.message;} finally {if(btn) btn.disabled=false;}
 }
 async function registerOnline(){
+  const btn=document.getElementById("registerBtn"); if(btn) btn.disabled=true;
   const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
   if(!email||password.length<8){document.getElementById("authMsg").textContent="Geçerli e-posta ve en az 8 karakter şifre gerekli.";return;}
   try{const d=await api("/api/register",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
-  catch(e){document.getElementById("authMsg").textContent=e.message;}
+  catch(e){document.getElementById("authMsg").textContent=e.message;} finally {if(btn) btn.disabled=false;}
 }
 async function loadOnlineGoals(){const d=await api("/api/goals");goals=Array.isArray(d.goals)?d.goals:[];localStorage.setItem("ht_goals",JSON.stringify(goals));}
 async function loadOnlineProfile(){const d=await api("/api/profile");if(d.settings)settings=d.settings;if(Array.isArray(d.questions)&&d.questions.length)questions=d.questions;persist();}
