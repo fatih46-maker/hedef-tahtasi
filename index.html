@@ -147,18 +147,31 @@ async function api(path,options={}){
   return data;
 }
 async function loginOnline(){
-  const btn=document.getElementById("loginBtn"); if(btn) btn.disabled=true;
-  const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
-  if(!email||!password){document.getElementById("authMsg").textContent="E-posta ve şifre gerekli.";return;}
-  try{const d=await api("/api/login",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
-  catch(e){document.getElementById("authMsg").textContent=e.message;} finally {if(btn) btn.disabled=false;}
+  const msg=document.getElementById("authMsg");
+  const email=document.getElementById("authEmail").value.trim().toLowerCase(), password=document.getElementById("authPassword").value;
+  msg.textContent="";
+  if(!email||!email.includes("@")){msg.textContent="Geçerli bir e-posta yaz.";return;}
+  if(!password){msg.textContent="Şifreni yaz.";return;}
+  try{
+    const d=await api("/api/login",{method:"POST",body:JSON.stringify({email,password})});
+    onlineToken=d.token; sessionStorage.setItem("ht_online_token",onlineToken);
+    await loadOnlineProfile(); await loadOnlineGoals();
+    document.getElementById("authScreen").classList.add("hidden"); go("home");
+  }catch(e){msg.textContent=e.message;}
 }
 async function registerOnline(){
-  const btn=document.getElementById("registerBtn"); if(btn) btn.disabled=true;
-  const email=document.getElementById("authEmail").value.trim(), password=document.getElementById("authPassword").value;
-  if(!email||password.length<8){document.getElementById("authMsg").textContent="Geçerli e-posta ve en az 8 karakter şifre gerekli.";return;}
-  try{const d=await api("/api/register",{method:"POST",body:JSON.stringify({email,password})});onlineToken=d.token;sessionStorage.setItem("ht_online_token",onlineToken);await loadOnlineProfile();await loadOnlineGoals();document.getElementById("authScreen").classList.add("hidden");go("home");}
-  catch(e){document.getElementById("authMsg").textContent=e.message;} finally {if(btn) btn.disabled=false;}
+  const msg=document.getElementById("authMsg");
+  const email=document.getElementById("authEmail").value.trim().toLowerCase(), password=document.getElementById("authPassword").value;
+  msg.textContent="";
+  if(!email||!email.includes("@")){msg.textContent="Geçerli bir e-posta yaz.";return;}
+  if(password.length<8){msg.textContent="Şifre en az 8 karakter olmalı.";return;}
+  try{
+    const d=await api("/api/register",{method:"POST",body:JSON.stringify({email,password})});
+    onlineToken=d.token; sessionStorage.setItem("ht_online_token",onlineToken);
+    try{await loadOnlineProfile();}catch(_){ }
+    try{await loadOnlineGoals();}catch(_){ goals=[]; localStorage.setItem("ht_goals","[]"); }
+    document.getElementById("authScreen").classList.add("hidden"); go("home");
+  }catch(e){msg.textContent=e.message;}
 }
 async function loadOnlineGoals(){const d=await api("/api/goals");goals=Array.isArray(d.goals)?d.goals:[];localStorage.setItem("ht_goals",JSON.stringify(goals));}
 async function loadOnlineProfile(){const d=await api("/api/profile");if(d.settings)settings=d.settings;if(Array.isArray(d.questions)&&d.questions.length)questions=d.questions;persist();}
@@ -600,6 +613,10 @@ function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",
 function escAttr(s){return esc(s).replace(/`/g,"&#096;")}
 function home(){stats.innerHTML=`<div class="stat"><span>Toplam hedef</span><b>${goals.length}</b></div><div class="stat"><span>Tahtada</span><b>${goals.filter(x=>x.locked).length}</b></div><div class="stat"><span>Tahtaya hazır</span><b>${goals.filter(x=>x.s.d==="TAHTAYA HAZIR").length}</b></div><div class="stat"><span>Bekleyen</span><b>${goals.filter(x=>x.s.d!=="TAHTAYA HAZIR"&&!x.locked).length}</b></div><div class="stat"><span>Soru sayısı</span><b>${questions.length}</b></div>`}
 document.addEventListener("DOMContentLoaded", async function(){
+  const ae=document.getElementById("authEmail"), ap=document.getElementById("authPassword");
+  if(ae) ae.addEventListener("input",()=>{document.getElementById("authMsg").textContent="";});
+  if(ap) ap.addEventListener("input",()=>{document.getElementById("authMsg").textContent="";});
+
   fillCats();
   if(window.ONLINE_CONFIG.enabled){
     if(onlineToken){
