@@ -3,7 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const PORT = process.env.PORT || 8080;
+const PORT = Number(process.env.PORT) || 8080;
+const HOST = process.env.HOST || "0.0.0.0";
 const ROOT = __dirname;
 const DB = path.join(ROOT, "data.json");
 
@@ -129,4 +130,4 @@ const server=http.createServer(async (req,res)=>{
     send(res,404,{error:"Bulunamadı"});
   } catch(e) { send(res,500,{error:"Sunucu hatası"}); }
 });
-server.listen(PORT,()=>console.log("Hedef Tahtası server listening on "+PORT));
+server.listen(PORT, HOST, ()=>console.log("Hedef Tahtası server listening on "+HOST+":"+PORT));
