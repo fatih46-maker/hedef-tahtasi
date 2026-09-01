@@ -28,7 +28,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
 window.ONLINE_CONFIG = {
   enabled: true,
   apiBaseUrl: "",
-  version: "1.0"
+  version: "1.2"
 };
 </script>
 </head>
@@ -146,33 +146,33 @@ async function api(path,options={}){
   if(!r.ok) throw new Error(data.error||"İşlem başarısız.");
   return data;
 }
-async function loginOnline(){
+async function authRequest(mode){
   const msg=document.getElementById("authMsg");
-  const email=document.getElementById("authEmail").value.trim().toLowerCase(), password=document.getElementById("authPassword").value;
+  const emailEl=document.getElementById("authEmail"), passEl=document.getElementById("authPassword");
+  const loginBtn=document.getElementById("loginBtn"), registerBtn=document.getElementById("registerBtn");
+  const email=String(emailEl.value||"").trim().toLowerCase();
+  const password=String(passEl.value||"");
   msg.textContent="";
-  if(!email||!email.includes("@")){msg.textContent="Geçerli bir e-posta yaz.";return;}
-  if(!password){msg.textContent="Şifreni yaz.";return;}
-  try{
-    const d=await api("/api/login",{method:"POST",body:JSON.stringify({email,password})});
-    onlineToken=d.token; sessionStorage.setItem("ht_online_token",onlineToken);
-    await loadOnlineProfile(); await loadOnlineGoals();
-    document.getElementById("authScreen").classList.add("hidden"); go("home");
-  }catch(e){msg.textContent=e.message;}
-}
-async function registerOnline(){
-  const msg=document.getElementById("authMsg");
-  const email=document.getElementById("authEmail").value.trim().toLowerCase(), password=document.getElementById("authPassword").value;
-  msg.textContent="";
-  if(!email||!email.includes("@")){msg.textContent="Geçerli bir e-posta yaz.";return;}
+  if(!email || !email.includes("@") || !email.includes(".")){msg.textContent="Geçerli bir e-posta yaz.";return;}
   if(password.length<8){msg.textContent="Şifre en az 8 karakter olmalı.";return;}
+  loginBtn.disabled=true; registerBtn.disabled=true;
   try{
-    const d=await api("/api/register",{method:"POST",body:JSON.stringify({email,password})});
-    onlineToken=d.token; sessionStorage.setItem("ht_online_token",onlineToken);
-    try{await loadOnlineProfile();}catch(_){ }
-    try{await loadOnlineGoals();}catch(_){ goals=[]; localStorage.setItem("ht_goals","[]"); }
-    document.getElementById("authScreen").classList.add("hidden"); go("home");
-  }catch(e){msg.textContent=e.message;}
+    const d=await api(mode==="register"?"/api/register":"/api/login",{method:"POST",body:JSON.stringify({email,password})});
+    if(!d.token) throw new Error("Oturum oluşturulamadı.");
+    onlineToken=d.token;
+    sessionStorage.setItem("ht_online_token",onlineToken);
+    await loadOnlineProfile();
+    await loadOnlineGoals();
+    document.getElementById("authScreen").classList.add("hidden");
+    go("home");
+  }catch(e){
+    msg.textContent=e.message||"İşlem başarısız.";
+  }finally{
+    loginBtn.disabled=false; registerBtn.disabled=false;
+  }
 }
+function loginOnline(){return authRequest("login");}
+function registerOnline(){return authRequest("register");}
 async function loadOnlineGoals(){const d=await api("/api/goals");goals=Array.isArray(d.goals)?d.goals:[];localStorage.setItem("ht_goals",JSON.stringify(goals));}
 async function loadOnlineProfile(){const d=await api("/api/profile");if(d.settings)settings=d.settings;if(Array.isArray(d.questions)&&d.questions.length)questions=d.questions;persist();}
 async function syncProfile(){try{await api("/api/profile",{method:"PUT",body:JSON.stringify({settings,questions})});}catch(e){console.warn(e);}}

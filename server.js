@@ -13,6 +13,7 @@ function load() {
   catch (_) { return { users: [], goals: [] }; }
 }
 function save(db) {
+  fs.mkdirSync(ROOT,{recursive:true});
   const tmp = DB + ".tmp";
   fs.writeFileSync(tmp, JSON.stringify(db, null, 2), "utf8");
   fs.renameSync(tmp, DB);
@@ -36,7 +37,7 @@ const sessions = new Map();
 const server=http.createServer(async (req,res)=>{
   try {
     if(req.method==="GET" && req.url==="/api/health")
-      return send(res,200,{ok:true,service:"hedef-tahtasi",version:"1.0"});
+      return send(res,200,{ok:true,service:"hedef-tahtasi",version:"1.2"});
 
     if(req.method==="POST" && req.url==="/api/register"){
       const x=await body(req), db=load();
